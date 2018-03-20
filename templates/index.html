@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>The Hew Family</title>
+	<link href="/fonts?family={{data.fonts|join('|')}}" rel="stylesheet">
+	<link rel="stylesheet" href="/static/css/ind.min.css">
+	<link rel="icon" href="static/img/icon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="/static/img/ico.png">
+	<link rel="apple-touch-startup-image" href="/static/img/ico.png">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="manifest" href="/static/wm.webmanifest">
+	<meta name="theme-color" content="orange">
+	<style>
+		.opener {
+			margin: 7.5vh {{16.66/(data.tabs|list|count+0.1)}}%;
+			width: {{100/((data.tabs|list|count+0.1)*1.5)}}%;
+		}
+	</style>
+	<script src="/static/js/jquery.js"></script>
+	<script src="/static/js/ind.js"></script>
+</head>
+
+<body onload="flip((getCookie('tab')==='')?0:parseInt(getCookie('tab')));update()">
+	<!-- Starts here -->
+	<div id="content-wrapper">
+		(You can go to <a href="/tabs" target="_blank" rel="noopener">/tabs</a> to edit your tab if you have any. This will take you to a web browser, away from the web app. You can also add <em>that</em> to the home screen.)
+		<noscript>
+			<div id="nsrpt">
+				<h1>Your browser does not allow JavaScript.</h1>
+			</div>
+		</noscript>
+		<div id="tab-openers">
+			{% for i in data.tabs|list %}
+			<div class="opener" id="tabo{{loop.index0}}" onclick="flip({{loop.index0}})" style="color:{{i.style.4}};background-color:{{i.style.1}}">{{ i.owners|join(" & ") }}</div>{% endfor %}
+		</div>
+		<div id="tabs">
+			<div style="z-index:0;display:block;background-color:white" class="tab">
+				<h1>Tab does not exist.</h1>
+			</div>
+			{% for j in data.tabs|list %}
+			<table rules="none" id="tab{{loop.index0}}" class="tab" style="display: none;background-color:{{j.style.1}};color:{{j.style.2}};font:{{j.style.0}};background-image:url({{j.style.3}});">
+				<tr>
+					<td class="left">
+						{{j.content.0|safe}}&nbsp;
+					</td>
+					<td class="center" style="background-image:none;background-color:{{j.style.1}}">
+						{{j.content.1|safe}}&nbsp;
+						<div class="comments"><br> {% set tabcomms = data.comments|list|selectattr("tab","equalto",loop.index0)|list|reverse|list %}{% set count = tabcomms|list|count %}
+							<h4>{{count}} Comment{% if count != 1 %}s{% endif %}</h4>
+						
+							<form method="post" action="/comment">
+								{% if request.args["login"] == "1" %}Wrong password{% elif request.args["login"] == "2" %}Wrong name{% elif request.args["login"] == "3" %}Account already exists. Use a different name.{% endif %}
+								<br> Name:<input name="name" placeholder="Name" autocomplete="username" required>
+								<br/> Password:
+								<input type="password" name="pwd" placeholder="Password" autocomplete="current-password" required><br/>
+								<input type="checkbox" name="new" value="new">I am new
+								<br/> Comment:
+								<br/>
+								<textarea name="comment" class="comment" cols="5" placeholder="Comment..." value="" required></textarea>
+								<br/>
+								<input type="hidden" name="tab" class="tb" value="{{loop.index0}}">
+								<br>
+								<input type="submit" value="Submit Comment" class="submit">
+							</form>
+							<hr>
+							<div class="displaycomm">
+								{% for k in tabcomms %}
+								<div class="acomment">
+									{{k.comment[:99]}} {% if k.comment|length is greaterthan 100 %}
+									<br>
+									<span onclick="$('#sm{{loop.index0}}')[0].style.display='none';$('#comm{{loop.index0}}')[0].style.display='inline-block'" id="sm{{loop.index0}}" style="color:#777777;text-decoration:underline;cursor:hand">
+										<hr>
+										Show more
+									</span>
+									<span id="comm{{loop.index0}}" style="display:none">
+										{{k.comment[100:]}}
+										<span id="sl{{loop.index0}}" onclick="$('#sm{{loop.index0}}')[0].style.display='inline-block';$('#comm{{loop.index0}}')[0].style.display='none'" style="color:#777777;text-decoration:underline;cursor:hand">
+												<hr>
+											Show less
+										</span>
+									</span>
+									{% endif %}
+									<div style="bottom:0;left:0;font-size:0.5em">
+										by {{k.uid}}, at {{k.time}}
+									</div>
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+					</td>
+					<td class="right">
+						{{j.content.2|safe}}&nbsp;
+					</td>
+				</tr>
+			</table>
+			{% endfor %}
+		</div>
+	</div>
+	</div>
+</body>
+</html>

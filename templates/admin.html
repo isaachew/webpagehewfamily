@@ -1,0 +1,23 @@
+<html>
+    <body>
+        <h1>Admin</h1>
+        Database(Note: All passwords are SHA256 hashed.)<br>Admin key:<br>0=normal<br>family member:0, tabs have owners
+        Tab format:
+        <pre>tabs:[&lt;tabs&gt;]
+        Tab format:
+        {"owners":[&lt;ownerstrings&gt;],"style":&lt;style&gt;,"content":[&lt;left-content&gt;,&lt;mid-content&gt;,&lt;right-content&gt;]}
+        Style format:
+        [&lt;font&gt;,&lt;backgroundcolstr&gt;,&lt;foregroundcolorstr&gt;,&lt;bgimagestr&gt;,&lt;foreground for tab opener str&gt;]
+        </pre>
+        1=admin
+        <form action="/changecomments" method="post">
+            <textarea contenteditable="true" name="comments" style="width:100%;height:100%;">{{comm}}</textarea>
+            <input type="submit">
+        </form>
+        <form action = "/hash" method="post">
+            Password:<input name="pwd" type="password"><br>
+            Hashing this:<input name="n"><br>
+            <input type="submit">
+        </form>
+    </body>
+</html>

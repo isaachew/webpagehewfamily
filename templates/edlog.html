@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Tab Editing Login</title>
+    <link rel="icon" href="/static/img/icon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="/static/img/ico.png">
+	<link rel="apple-touch-startup-image" href="/static/img/ico.png">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+</head>
+
+<body>
+    <div id = "content-wrapper" style="margin:25vh 25vw;width:50vw;height:50vh;background-color:#DD0;color:#ff0000">
+        <a href="/" style="color:red;text-decoration:none">Click to go back to homepage</a>
+        <h1 style="color:#ff0000">Sign in to edit tabs</h1>
+        <form action="/edittabs" method="post">
+            Name:<input name="name" placeholder="Name" autocomplete="username" required>
+			<br/>
+			Password:<input type="password" name="pwd" placeholder="Password" required><br/>
+            <input type="submit" value="Submit Account" style="background-color:#DD0"/>
+        </form>
+    </div>
+</body>
+
+</html>
