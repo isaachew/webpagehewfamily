@@ -1,7 +1,4 @@
-s=$(echo)
-@echo off
 git add .
 git commit -m "Update from Cloud9"
 git remote add origin https://github.com/isaachew/webpagehewfamily.git
 git push -u origin master
-echo $s
