@@ -71,19 +71,27 @@ def passwdget():
         <input type="submit" value="Go to admin">
     </form>
     """
+@app.route("/trap/<int:a>")
+def trap(a=1):
+    return "<a href='/trap/"+str(a+1)+"'>Spider trap. To /trap/"+str(a+1)+"</a>"
 @app.route('/')
-def index():
+def index(v=None):
     if request.headers.get('X-Forwarded-Proto', 'http')=='http':
         url="https"+request.url[4:]
         if url.endswith(":80/"):
             url=url[:-1]
             url+="80"
         return redirect(url)
-    return render_template("index.html",data=data)
+    tindex=sum([i+1 if " & ".join(data["tabs"][i]["owners"])==v else 0 for i in range(len(data["tabs"]))])-1
+    if tindex==-1 and v!=None:
+        return render_template("nf.html")
+    return render_template("index.html",data=data,v=sum([i+1 if " & ".join(data["tabs"][i]["owners"])==v else 0 for i in range(len(data["tabs"]))])-1)
 @app.route("/changecomments",methods=["POST"])
 def change():
     global data
-    data=json.loads(request.form["comments"])
+    dat=json.loads(request.form["comments"])
+    data["tabs"]=dat["tabs"]
+    data["comments"]=dat["comments"]
     save_db()
     return redirect("/")
 @app.route("/hash",methods=["POST"])
@@ -107,7 +115,12 @@ def edittabs():
         if sha256(request.form["pwd"]).hexdigest()==data["passwords"][request.form["name"]][0]:
             resp=Response(render_template("tabs.html",data=data))
             resp.headers['Cache-Control'] = 'no-cache'
-            return render_template("tabs.html",data={"tabs":filter(lambda x:request.form["name"] in x["owners"],data["tabs"]),"fonts":data["fonts"]})
+            normdata=filter(lambda x:request.form["name"] in x["owners"],data["tabs"])
+            if data["passwords"][request.form["name"]][1]:
+                dat=data["tabs"]
+            else:
+                dat=normdata
+            return render_template("tabs.html",data={"tabs":dat,"fonts":data["fonts"]})
     except KeyError:
         pass
     return redirect("/")
@@ -121,6 +134,13 @@ def servw():
     a=f.read()
     f.close()
     return Response(a,mimetype="text/javascript")
+@app.route("/robots.txt")
+def robots():
+    rt=os.path.join(os.path.dirname(os.path.abspath(__file__)),"static/robots.txt")
+    f=open(rt)
+    a=f.read()
+    f.close()
+    return Response(a,mimetype="text/plain")
 @app.route("/fonts")
 def fonts():
     return Response(requests.get("https://fonts.googleapis.com/css?"+"&".join([n[0]+"="+n[1] for n in request.args.items()])).content,mimetype="text/css")
@@ -130,9 +150,12 @@ def changets():
     d=json.loads(request.form["tabs"])
     for i in d:
         for j in range(len(data["tabs"])):
+            print(j,"old",data["tabs"][j]["owners"],'new',i["owners"],'"')
             if data["tabs"][j]["owners"]==i["owners"]:
                 data["tabs"][j]=i
-                break
     save_db()
     return redirect("/")
+@app.route("/<v>")
+def details(v):
+    return index(v)
 app.run(host="0.0.0.0",port=8080,debug=True)

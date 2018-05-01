@@ -1,7 +1,7 @@
 var tab = 0;
 function flip(num) {
-    $("#tab"+tab).css("display","none")
-    $("#tab" + num).css("display", "block")
+    $(".tab").css("display","none")
+    $("#tab" + num).css("display", "table")
     document.cookie = 'tab=' + num;
     tab=num;
 }
@@ -33,13 +33,43 @@ function update() {
             n = are.exec(a.attr("date"));
         if (a.attr("date")) {
             var o = new Date(n[4], n[3], n[1]);
-            a.text(Math.floor((t.valueOf() - o.valueOf()) /31556952000));
+            a.text(Math.floor((t.valueOf() - o.valueOf()) /31536000000));
         }
     })
     $("lnk").each(function(k) { $(this).click(function() { flip($(this).attr("tab")) }) });
+    addSW()
 }
-
+function postMessage(n){
+    try{
+        navigator.serviceWorker.controller.postMessage(n)
+    }catch(e){console.log("Error: "+e)}
+}
+function getmodal(ins,clickResponse=function(){}) {
+    div=$("<div id='modal'></div>")
+    inner=$('<div id="innermodal"><div style="right:0;top:0;color:gray">🞫</div></div>')
+    inner.children().click(function(){$(this.parentElement.parentElement).remove();clickResponse()})
+    inner.append($("<spacer>&nbsp;</spacer>"+ins))
+    div.append(inner)
+	$("#content-wrapper").append(div)
+}
 function addSW() {
+    console.log(window.Notification)
+    function f(){
+        n=getCookie("notification")
+        if(!n){
+            document.cookie="notification=true"
+            getmodal("Click the gray 🞫 to allow notifications. <button onclick=\"$(this.parentElement.parentElement).remove()\">Deny</button>",function(){window.Notification.requestPermission().then(function(v){
+                if(v==="denied"||v==="default"){
+                    console.log("No notifications. Posting message")
+                    postMessage({"notifications":false})
+                }
+                else
+                {
+                    postMessage({"notifications":true})
+                }
+            })})
+        }
+    }
     if ("serviceWorker" in navigator) {
         d=navigator.serviceWorker.register('/servw.js',{scope:"/"}).then(function(r) {
             console.log("%cService worker successful: "+r,"color:green")
@@ -53,10 +83,8 @@ function addSW() {
                     return swRegistration.sync.register('website_sync');
                 })
             }
+            f()
         }).catch(function(r) {
-            console.log("%cService worker failed: "+r,"color:red")
-        }).pushManager.subscribe()
+            console.log("%cService worker failed: "+r,"color:red")})
     }
 }
-console.log("update")
-addSW()

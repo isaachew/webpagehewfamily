@@ -5,7 +5,7 @@
 	<title>The Hew Family</title>
 	<link href="/fonts?family={{data.fonts|join('|')}}" rel="stylesheet">
 	<link rel="stylesheet" href="/static/css/ind.min.css">
-	<link rel="icon" href="static/img/icon.ico" type="image/x-icon">
+	<link rel="icon" href="static/img/ico.ico" type="image/x-icon">
 	<link rel="apple-touch-icon" href="/static/img/ico.png">
 	<link rel="apple-touch-startup-image" href="/static/img/ico.png">
 	<meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,35 +13,25 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="manifest" href="/static/wm.webmanifest">
 	<meta name="theme-color" content="orange">
-	<style>
-		.opener {
-			margin: 7.5vh {{16.66/(data.tabs|list|count+0.1)}}%;
-			width: {{100/((data.tabs|list|count+0.1)*1.5)}}%;
-		}
-	</style>
+	<style>.opener{margin: 7.5vh {{16.66/(data.tabs|list|count+0.1)}}%;width:{{100/((data.tabs|list|count+0.1)*1.5)}}%}#content-wrapper{height:100vh}</style>
 	<script src="/static/js/jquery.js"></script>
 	<script src="/static/js/ind.js"></script>
 </head>
 
-<body onload="flip((getCookie('tab')==='')?0:parseInt(getCookie('tab')));update()">
+<body>
 	<!-- Starts here -->
-	<div id="content-wrapper">
-		(You can go to <a href="/tabs" target="_blank" rel="noopener">/tabs</a> to edit your tab if you have any. This will take you to a web browser, away from the web app. You can also add <em>that</em> to the home screen.)
-		<noscript>
-			<div id="nsrpt">
-				<h1>Your browser does not allow JavaScript.</h1>
-			</div>
-		</noscript>
+	<div id="content-wrapper">{% if v==-1 %}
+		(You can go to <a href="/" target="_blank" rel="noopener" id="tabs-link">/tabs</a> to edit your tab if you have any. This will take you to a web browser, away from the web app. You can also add <em>that</em> to the home screen.)
 		<div id="tab-openers">
 			{% for i in data.tabs|list %}
-			<div class="opener" id="tabo{{loop.index0}}" onclick="flip({{loop.index0}})" style="color:{{i.style.4}};background-color:{{i.style.1}}">{{ i.owners|join(" & ") }}</div>{% endfor %}
-		</div>
-		<div id="tabs">
-			<div style="z-index:0;display:block;background-color:white" class="tab">
+			<div class="opener" id="tabo{{loop.index0}}" onclick="flip({{loop.index0}})" style="color:{{i.style.4}};background-color:{{i.style.1}};display:none">{{ i.owners|join(" & ") }}</div>{% endfor %}
+		</div>{% endif %}
+		<div id="_tabs">
+			<div style="z-index:0;display:none;background-color:white" class="tab" id="no-tab">
 				<h1>Tab does not exist.</h1>
 			</div>
 			{% for j in data.tabs|list %}
-			<table rules="none" id="tab{{loop.index0}}" class="tab" style="display: none;background-color:{{j.style.1}};color:{{j.style.2}};font:{{j.style.0}};background-image:url({{j.style.3}});">
+			<table rules="none" id="tab{{loop.index0}}" class="tab" style="background-color:{{j.style.1}};color:{{j.style.2}};font:{{j.style.0}};background-image:url({{j.style.3}});">
 				<tr>
 					<td class="left">
 						{{j.content.0|safe}}&nbsp;
@@ -100,5 +90,18 @@
 		</div>
 	</div>
 	</div>
+	<script>
+		$(".opener").css("display","inline-block")
+		$("#_tabs").attr("id","tabs")
+		$(".tab").css("position","absolute")
+		$("#no-tab").css("display","block")
+		$("#tabs-link").attr("href","/tabs")
+		ispage=Boolean({{v+1}})
+		if(ispage){
+			$("#tabs,.tab").css("height","100%")
+		}
+		flip({{v+1}}?{{v}}:((getCookie('tab')==='')?0:parseInt(getCookie('tab'))))
+		update()
+	</script>
 </body>
 </html>

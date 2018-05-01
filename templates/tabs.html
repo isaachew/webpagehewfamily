@@ -14,59 +14,7 @@
 	<link rel="manifest" href="/static/wm.webmanifest">
 	<meta name="theme-color" content="orange">
 	<style>
-		.opener {
-			display: inline-block;
-			margin: 7.5vh {{16.66/(data.tabs|list|count+0.1)}}%;
-			width: {{100/((data.tabs|list|count+0.1)*1.5)}}%;
-			height: 7.5vh;
-			top: 7.5vh;
-			font-size: 2vw;
-		}
-
-		#c-wrapper {
-			background-color: #777777
-		}
-
-		age {
-			background-color: rgba(255, 255, 0, 0.5)
-		}
-
-		lnk {
-			background-color: rgba(0, 255, 0, 0.5)
-		}
-
-		tool,
-		input[type=submit] {
-			width: 3em;
-			height: 3em;
-			appearance: button;
-			-webkit-appearance: button;
-			-moz-appearance: button;
-			overflow: hidden;
-			border:none;
-			background-color:#dddddd;
-			text-align:center;
-			line-height: 3em;
-		}
-
-		#ptlink {color:blue}
-		#ptlink::hover{text-decoration:underline}
-		#modal{
-			z-index:60;
-			width:100vw;
-			height:100vh;
-			position: fixed;
-			top:0;
-			left:0;
-			background-color:rgba(0,0,0,0.5);
-		}
-		#innermodal{
-			top:50vh;
-			left:50vw;
-			background-color:#FFFFFF;
-			padding:12px;
-			position: fixed;
-		}
+		.opener {display: inline-block;margin: 7.5vh {{16.66/(data.tabs|list|count+0.1)}}%;width: {{100/((data.tabs|list|count+0.1)*1.5)}}%;height:7.5vh;top:7.5vh;font-size:2vw}#content-wrapper{background-color:#777777;height:100vh}age{background-color:rgba(255,255,0,0.5)}lnk{background-color:rgba(0,255,0,0.5)}tool,input[type=submit]{width:3em;height:3em;appearance:button;-webkit-appearance:button;-moz-appearance:button;overflow:hidden;border:none;background-color:#dddddd;text-align:center;line-height:3em;}#ptlink{color:blue}#ptlink::hover{text-decoration:underline}#modal{z-index:60;width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.5)}#innermodal{top:50vh;left:50vw;background-color:#FFFFFF;padding:12px;position:fixed}
 	</style>
 	<script src="/static/js/jquery.js"></script>
 	<script src="/static/js/ind.js"></script>
@@ -75,8 +23,9 @@
 <body onload="flip((getCookie('tab')==='')?0:parseInt(getCookie('tab')));update()">
 	<!-- Starts here -->
 	Editing Tabs...
-	<div id="c-wrapper">
-		<form method="post" action="/changetabs" onsubmit="submit()">
+	<div id="content-wrapper">
+		<form method="post" action="/changetabs" onsubmit="submit()" id="submit-form">
+			<input type="hidden" name="tabs" id="input"></input>
 			(You can go to <span id="ptlink">/tabs</span> to edit your tab if you have any. This will take you to a web browser, away from the web app. You can also add <em>that</em> to the home screen.)
 			<noscript>
 			<div id="nsrpt">
@@ -84,9 +33,9 @@
 			</div>
 		</noscript>
 			<div id="tools">
-				<input type="submit" value="SUB">
-				<tool onclick="getmodal(`Insert HTML<br><textarea id='html'><\/textarea><button onclick='insert(document.getElementById(\`html\`).value);$(this).parent().parent().remove()'>Go<\/button>`)">&lt;/&gt;</tool>
-				<tool style="text-decoration:underline;text-decoration-color:gray;-webkit-text-decoration-color:gray" onclick=>A</tool>
+				<tool onclick="submit()">SUB</tool>
+				<tool id="html">&lt;/&gt;</tool>
+				<tool style="text-decoration:underline;text-decoration-color:gray;-webkit-text-decoration-color:gray" onclick=></tool>
 			</div>
 			<div id="tab-openers">
 				{% for i in data.tabs|list %}
@@ -97,23 +46,21 @@
 					<h1>Tab does not exist.</h1>
 				</div>
 				{% for j in data.tabs|list %}
-				<div id="tab{{loop.index0}}" class="tab" style="display: none;background-color:{{j.style.1}};color:{{j.style.2}};font:{{j.style.0}};background-image:url({{j.style.3}})">
-					<table>
-						<tr>
-							<td class='left' contenteditable>
-								{{j.content.0|safe}}&nbsp;
-							</td>
-							<td class='center' contenteditable style="background-color:{{j.style.1}}">
+				<table id="tab{{loop.index0}}" class="tab" style="display: none;background-color:{{j.style.1}};color:{{j.style.2}};font:{{j.style.0}};background-image:url({{j.style.3}})">
+					<tr>
+						<td class='left' contenteditable>
+							{{j.content.0|safe}}&nbsp;
+						</td>
+						<td class='center' contenteditable style="background-color:{{j.style.1}}">
 
-								{{j.content.1|safe}}&nbsp;
+							{{j.content.1|safe}}&nbsp;
 
-							</td>
-							<td class='right' contenteditable>
-								{{j.content.2|safe}}&nbsp;
-							</td>
-						</tr>
-					</table>
-				</div>
+						</td>
+						<td class='right' contenteditable>
+							{{j.content.2|safe}}&nbsp;
+						</td>
+					</tr>
+				</table>
 				{% endfor %}
 			</div>
 	</div>
@@ -126,7 +73,14 @@
 			mp.x = event.pageX;
 			mp.y = event.pageY;
 		});
-
+		$("tool").click(function(e) {
+			id=this.id
+			switch(id){
+				case "html":
+					getmodal(`Insert HTML<br><textarea id="htmlinput"><\/textarea><button onclick="insert(document.getElementById('htmlinput').value);$(this).parent().parent().remove();update()">Go<\/button>`)
+					break
+			}
+		});
 		function more(tab) {
 			pos = mp
 			n = $("<dropdown onmouseout='$(\"dropdown\").remove()' style='position:absolute;top:" + (pos.y - 10) + "px;left:" + (pos.x - 10) + "px;display:block;background-color:#aaaaaa'>\</dropdown>")
@@ -141,22 +95,35 @@
 		function insert(val) {
 			$("#tab" + tab + " ." + part).append(val)
 		}
-
-		function getmodal(ins) {
-			$("#c-wrapper").append($("<div id='modal'><div id='innermodal'>" + ins + "</div></div>"))
-		}
 		
 		function submit(){
-			alert("hi")
 			ts=[]
-			for(var i in $("#tabs").children()){
-				console.log(i)
-				tab={}
-				tab.owners=0
+			ch=$("#tabs").children()
+			for(var i=0;i<ch.length-1;i++){
+				tab_={}
+				_tab=$("#tab"+i)[0]
+				console.log(_tab)
+				tab_.owners=$("#tabo"+i).text().slice(0,-4).split(" & ")
+				tab_.content=[$("#tab"+i+" .left").html(),$("#tab"+i+" .center").html(),$("#tab"+i+" .right").html()]
+				tab_.style=[null,null,null,null,null]
+				tab_.style[0]=_tab.style.font.split(" ")[1]
+				tab_.style[1]=_tab.style.backgroundColor
+				tab_.style[2]=_tab.style.color
+				tab_.style[3]=_tab.style.backgroundImage
+				tab_.style[4]=$("#tabo"+i)[0].style.color
+				//console.log(tab_)
+				ts.push(tab_)
 			}
-			$("#input").val(v)
+			$("#input").val(JSON.stringify(ts))
+			document.getElementById("submit-form").submit()
 		}
+		$(".opener").css("display","inline-block")
+		$("#_tabs").attr("id","tabs")
+		$(".tab").css("position","absolute")
+		$("#no-tab").css("display","block")
+		$("#tabs-link").attr("href","/tabs")
 	</script>
 </body>
 
 </html>
+

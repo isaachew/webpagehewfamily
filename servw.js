@@ -38,6 +38,16 @@ self.addEventListener("activate", function(event) {
     }))
   }))
 });
-console.log(navigator,self)
-function f(){Notification.requestPermission().then(function(v){f()})};f()
-setInterval(function(){self.registration.showNotification("The Hew Family",{"vibrate":[100,100,100,200,300,200,100,100,100]})},1000)
+addEventListener('notificationclick', event => {
+  event.waitUntil(async function() {
+    const allClients = await clients.matchAll({
+      includeUncontrolled: true
+    });
+    client=clients[0]
+    if(client != undefined){
+      client.focus()
+    }else{
+      clients.openWindow('/')}
+  }());
+});
+setInterval(function(){self.registration.showNotification("The Hew Family",{"vibrate":[100,100,100,200,300,200,100,100,100],"body":"Go to :\n"+self.registration.scope})},28800)
