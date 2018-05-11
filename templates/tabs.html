@@ -53,11 +53,11 @@
 						</td>
 						<td class='center' contenteditable style="background-color:{{j.style.1}}">
 
-							{{j.content.1|safe}}&nbsp;
+							{{j.content.1|safe}}
 
 						</td>
 						<td class='right' contenteditable>
-							{{j.content.2|safe}}&nbsp;
+							{{j.content.2|safe}}
 						</td>
 					</tr>
 				</table>
@@ -70,8 +70,8 @@
 		var mp = { x: -1, y: -1 };
 		var part = "center"
 		$(document).mousemove(function(event) {
-			mp.x = event.pageX;
-			mp.y = event.pageY;
+			mp.x = event.pageX
+			mp.y = event.pageY
 		});
 		$("tool").click(function(e) {
 			id=this.id
@@ -97,19 +97,20 @@
 		}
 		
 		function submit(){
+			debugger
 			ts=[]
 			ch=$("#tabs").children()
 			for(var i=0;i<ch.length-1;i++){
 				tab_={}
 				_tab=$("#tab"+i)[0]
-				console.log(_tab)
 				tab_.owners=$("#tabo"+i).text().slice(0,-4).split(" & ")
-				tab_.content=[$("#tab"+i+" .left").html(),$("#tab"+i+" .center").html(),$("#tab"+i+" .right").html()]
+				tab_.content=[$("#tab"+i+" .left").html().slice(0,-5),$("#tab"+i+" .center").html(),$("#tab"+i+" .right").html()]
 				tab_.style=[null,null,null,null,null]
 				tab_.style[0]=_tab.style.font
 				tab_.style[1]=_tab.style.backgroundColor
 				tab_.style[2]=_tab.style.color
-				tab_.style[3]=_tab.style.backgroundImage
+				tab_.style[3]=_tab.style.backgroundImage.slice(4,-2)
+				console.log(tab_.style[3])
 				tab_.style[4]=$("#tabo"+i)[0].style.color
 				//console.log(tab_)
 				ts.push(tab_)

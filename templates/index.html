@@ -37,7 +37,7 @@
 						{{j.content.0|safe}}&nbsp;
 					</td>
 					<td class="center" style="background-image:none;background-color:{{j.style.1}}">
-						{{j.content.1|safe}}&nbsp;
+						{{j.content.1|safe}}
 						<div class="comments"><br> {% set tabcomms = data.comments|list|selectattr("tab","equalto",loop.index0)|list|reverse|list %}{% set count = tabcomms|list|count %}
 							<h4>{{count}} Comment{% if count != 1 %}s{% endif %}</h4>
 						
@@ -82,7 +82,7 @@
 						</div>
 					</td>
 					<td class="right">
-						{{j.content.2|safe}}&nbsp;
+						{{j.content.2|safe}}
 					</td>
 				</tr>
 			</table>
