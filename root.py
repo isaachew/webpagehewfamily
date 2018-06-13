@@ -150,7 +150,6 @@ def changets():
     d=json.loads(request.form["tabs"])
     for i in d:
         for j in range(len(data["tabs"])):
-            print(j,"old",data["tabs"][j]["owners"],'new',i["owners"],'"')
             if data["tabs"][j]["owners"]==i["owners"]:
                 data["tabs"][j]=i
     save_db()

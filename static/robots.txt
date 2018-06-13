@@ -3,8 +3,8 @@
 User-agent: Googlebot # Google
 Disallow: /trap/
 Disallow: /tabs/
-Disallow: /$
 
 User-agent: * # All others
 Disallow: /trap/
 Disallow: /tabs/
+Disallow: /$

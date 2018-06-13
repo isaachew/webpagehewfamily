@@ -31,7 +31,7 @@
 				<h1>Tab does not exist.</h1>
 			</div>
 			{% for j in data.tabs|list %}
-			<table rules="none" id="tab{{loop.index0}}" class="tab" style="background-color:{{j.style.1}};color:{{j.style.2}};font:{{j.style.0}};background-image:url({{j.style.3}});">
+			<table rules="none" id="tab{{loop.index0}}" class="tab" style="background-color:{{j.style.1}};color:{{j.style.2}};font:{{j.style.0}};background-image:{{j.style.3}}">
 				<tr>
 					<td class="left">
 						{{j.content.0|safe}}&nbsp;
